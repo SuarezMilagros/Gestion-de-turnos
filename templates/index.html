@@ -9,10 +9,10 @@
     <!-- BARRA DE NAVEGACIÓN CON USUARIO -->
     <nav class="navbar navbar-dark bg-primary shadow-sm mb-4">
         <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">🏥 Sistema de Gestión de Turnos</span>
+            <span class="navbar-brand mb-0 h1"> Sistema de Gestión de Turnos</span>
             <div class="d-flex align-items-center">
                 <span class="text-white me-3">
-                    👤 {{ session.nombre_usuario }}
+                     {{ session.nombre_usuario }}
                 </span>
                 <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">
                     Cerrar Sesión
@@ -44,7 +44,7 @@
         <!-- Formulario para AGREGAR Turno (CREATE) -->
         <div class="card shadow-sm mb-5">
             <div class="card-header bg-primary text-white">
-                <h4>➕ Solicitar Nuevo Turno</h4>
+                <h4> Solicitar Nuevo Turno</h4>
             </div>
             <div class="card-body">
                 <form action="{{ url_for('agregar_turno') }}" method="POST" class="row g-3">
@@ -83,7 +83,7 @@
                     {% if session.id_paciente %}
                     <div class="col-12">
                         <div class="alert alert-info">
-                            <strong>📋 Paciente:</strong> {{ session.nombre_usuario }}
+                            <strong> Paciente:</strong> {{ session.nombre_usuario }}
                         </div>
                     </div>
                     {% endif %}
@@ -98,7 +98,7 @@
         </div>
 
         <!-- Tabla para MOSTRAR Turnos (READ) -->
-        <h2>📅 {% if session.id_paciente %}Mis Turnos{% else %}Turnos Programados{% endif %}</h2>
+        <h2> {% if session.id_paciente %}Mis Turnos{% else %}Turnos Programados{% endif %}</h2>
         <div class="table-responsive">
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-dark">
