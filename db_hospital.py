@@ -111,19 +111,19 @@ class GestionTurnosHospital:
             pacientes = [
                 ('Marcos', 'Aguero', '35123456', '1990-05-15', 'Masculino', '11-2345-6789', 'Av. Corrientes 1234, CABA'),
                 ('Emmanuel', 'Gramajo', '38456789', '1995-08-22', 'Masculino', '11-3456-7890', 'Calle San Martín 567, Buenos Aires'),
-                ('Milagros', 'Suarez', '40789123', '1998-11-30', 'Femenino', '11-4567-8901', 'Av. Rivadavia 890, CABA')
+                ('Milagros', 'Suarez', '42665700', '1998-11-30', 'Femenino', '11-4567-8901', 'Av. Rivadavia 890, CABA')
             ]
             self.cursor.executemany('''
                 INSERT OR IGNORE INTO pacientes (nombre, apellido, dni, fecha_nacimiento, genero, telefono, domicilio)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', pacientes)
             
-            # Insertar Usuarios (vinculados con pacientes)
+            # Insertar pacientes
             usuarios = [
-                ('Admin', 'Sistema', '12345678', 'admin', None),  # Admin sin paciente
-                ('Marcos', 'Aguero', '35123456', 'usuario', 1),   # Vinculado con paciente ID 1
-                ('Emmanuel', 'Gramajo', '38456789', 'usuario', 2), # Vinculado con paciente ID 2
-                ('Milagros', 'Suarez', '40789123', 'usuario', 3)   # Vinculado con paciente ID 3
+                ('Admin', 'Sistema', '12345678', 'admin', None), 
+                ('Marcos', 'Aguero', '35123456', 'usuario', 1),   
+                ('Emmanuel', 'Gramajo', '38456789', 'usuario', 2), 
+                ('Milagros', 'Suarez', '42665700', 'usuario', 3)   
             ]
             self.cursor.executemany('''
                 INSERT OR IGNORE INTO usuarios (nombre, apellido, dni, rol, id_paciente)
