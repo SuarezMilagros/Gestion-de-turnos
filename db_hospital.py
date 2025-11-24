@@ -371,7 +371,7 @@ class GestionTurnosHospital:
             return True
         except sqlite3.Error as e: print(f"✗ Error al eliminar médico: {e}")
 
-    # --- MÉTODOS CRUD (PACIENTES) ---
+    # --- MÉTODOS CRUD (PACIENTES) - MODIFICADOS ---
     def consultar_pacientes(self):
         try:
             self.cursor.execute('SELECT * FROM pacientes ORDER BY apellido')
@@ -393,36 +393,71 @@ class GestionTurnosHospital:
             return None
 
     def agregar_paciente(self, nombre, apellido, dni, fecha_nac, genero, telefono, domicilio):
+        """Agrega un nuevo paciente Y crea automáticamente su usuario para login"""
         try:
+            # 1. Insertar el paciente
             self.cursor.execute('''
                 INSERT INTO pacientes (nombre, apellido, dni, fecha_nacimiento, genero, telefono, domicilio)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (nombre, apellido, dni, fecha_nac, genero, telefono, domicilio))
+            
+            id_paciente_creado = self.cursor.lastrowid
+            
+            # 2. Crear automáticamente el usuario asociado
+            self.cursor.execute('''
+                INSERT INTO usuarios (nombre, apellido, dni, rol, id_paciente)
+                VALUES (?, ?, ?, 'usuario', ?)
+            ''', (nombre, apellido, dni, id_paciente_creado))
+            
             self.conexion.commit()
-            return self.cursor.lastrowid
+            print(f"✓ Paciente creado con ID {id_paciente_creado} y usuario asociado")
+            return id_paciente_creado
+            
+        except sqlite3.IntegrityError as e:
+            print(f"✗ Error: El DNI {dni} ya existe en el sistema")
+            return None
         except sqlite3.Error as e:
             print(f"✗ Error al agregar paciente: {e}")
             return None
 
     def actualizar_paciente(self, id_paciente, nombre, apellido, dni, fecha_nac, genero, telefono, domicilio):
+        """Actualiza un paciente Y sincroniza su usuario"""
         try:
+            # 1. Actualizar el paciente
             self.cursor.execute('''
                 UPDATE pacientes 
                 SET nombre=?, apellido=?, dni=?, fecha_nacimiento=?, genero=?, telefono=?, domicilio=?
                 WHERE id_paciente=?
             ''', (nombre, apellido, dni, fecha_nac, genero, telefono, domicilio, id_paciente))
+            
+            # 2. Actualizar el usuario asociado (si existe)
+            self.cursor.execute('''
+                UPDATE usuarios 
+                SET nombre=?, apellido=?, dni=?
+                WHERE id_paciente=?
+            ''', (nombre, apellido, dni, id_paciente))
+            
             self.conexion.commit()
+            print(f"✓ Paciente {id_paciente} y usuario asociado actualizados")
             return True
+            
         except sqlite3.Error as e:
             print(f"✗ Error al actualizar paciente: {e}")
             return False
 
     def eliminar_paciente(self, id_paciente):
+        """Elimina un paciente Y su usuario asociado"""
         try:
-            # Nota: Si el paciente tiene turnos, esto podría fallar si la FK tiene restricción
+            # 1. Eliminar el usuario asociado primero
+            self.cursor.execute('DELETE FROM usuarios WHERE id_paciente = ?', (id_paciente,))
+            
+            # 2. Eliminar el paciente
             self.cursor.execute('DELETE FROM pacientes WHERE id_paciente = ?', (id_paciente,))
+            
             self.conexion.commit()
+            print(f"✓ Paciente {id_paciente} y usuario asociado eliminados")
             return True
+            
         except sqlite3.Error as e:
             print(f"✗ Error al eliminar paciente (puede tener turnos asociados): {e}")
             return False
